@@ -21,12 +21,21 @@ class Square extends StatefulWidget {
 }
 
 class SquareState extends State<Square> with SingleTickerProviderStateMixin {
+  Animation<double> animation;
+  AnimationController controller;
   double top;
   double left;
 
   @override
   void initState() {
     super.initState();
+    super.initState();
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 800), vsync: this);
+    animation = Tween<double>(begin: 0, end: 100).animate(controller)
+      ..addListener(() {
+        setState(() {});
+      });
     left = widget.model.x * (axisWidth + widget.model.width);
     top = widget.model.y * (axisWidth + widget.model.width);
   }
@@ -35,6 +44,7 @@ class SquareState extends State<Square> with SingleTickerProviderStateMixin {
     setState(() {
       widget.model.player = player;
     });
+    controller.forward();
   }
 
   Widget getChild() {
@@ -63,6 +73,7 @@ class SquareState extends State<Square> with SingleTickerProviderStateMixin {
 
   Widget emptySquare() => GestureDetector(
         onTap: () {
+          print('tap');
           widget.model.callback(widget.model.x, widget.model.y);
         },
         child: Container(
@@ -73,7 +84,7 @@ class SquareState extends State<Square> with SingleTickerProviderStateMixin {
       );
 
   Widget circle() => CustomPaint(
-        painter: CirclePainter(),
+        painter: CirclePainter(animation.value),
         child: Container(
           width: widget.model.width,
           height: widget.model.width,
@@ -81,7 +92,7 @@ class SquareState extends State<Square> with SingleTickerProviderStateMixin {
       );
 
   Widget cross() => CustomPaint(
-        painter: CrossPainter(),
+        painter: CrossPainter(animation.value),
         child: Container(
           width: widget.model.width,
           height: widget.model.width,

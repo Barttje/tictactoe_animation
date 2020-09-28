@@ -6,6 +6,7 @@ import 'package:tictactoe_animation/LinePainter.dart';
 import 'package:tictactoe_animation/Player.dart';
 import 'package:tictactoe_animation/RestartWidget.dart';
 import 'package:tictactoe_animation/Square.dart';
+import 'package:tictactoe_animation/WinningLinePainter.dart';
 
 class TicTacToeHome extends StatefulWidget {
   TicTacToeHome({Key key, this.title}) : super(key: key);
@@ -23,6 +24,7 @@ class _TicTacToeHomeState extends State<TicTacToeHome> {
   bool isPlayerOne = true;
   double length;
   double size = 0;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,12 @@ class _TicTacToeHomeState extends State<TicTacToeHome> {
     widgets.addAll(squares);
   }
 
+  void restart() {
+    setState(() {
+      resetWidgets();
+    });
+  }
+
   Square getSquare(int x, int y) {
     return squares
         .firstWhere((element) => element.model.x == x && element.model.y == y);
@@ -66,7 +74,7 @@ class _TicTacToeHomeState extends State<TicTacToeHome> {
 
   void addLine(final Offset start, final Offset end) {
     widgets.add(CustomPaint(
-        painter: LinePainter(start, end, axisWidth, Colors.grey[400]),
+        painter: LinePainter(100, start, end, axisWidth, Colors.grey[400]),
         child: Container()));
   }
 
@@ -88,10 +96,9 @@ class _TicTacToeHomeState extends State<TicTacToeHome> {
     Result result = playerWon(squares, player, length);
     if (result.won) {
       setState(() {
-        widgets.add(CustomPaint(
-          painter:
-              LinePainter(result.begin, result.end, axisWidth, Colors.green),
-        ));
+        widgets.add(
+          WinningLine(model: WinningLineModel(result.begin, result.end)),
+        );
       });
     }
   }
@@ -101,7 +108,7 @@ class _TicTacToeHomeState extends State<TicTacToeHome> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: <Widget>[RestartWidget(this.resetWidgets)],
+        actions: <Widget>[RestartWidget(this.restart)],
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
